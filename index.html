@@ -6,25 +6,27 @@
   <title>Pedido de Insumos</title>
   <style>
     :root {
-      --bg: #0f172a;
-      --card: #111827;
-      --text: #e5e7eb;
-      --muted: #9ca3af;
-      --accent: #22d3ee;
+      --bg: #0a0f1c;
+      --card: #0f1729;
+      --text: #f8fafc;
+      --muted: #cbd5e1;
+      --accent: #e63946; /* vermelho do logo */
+      --accent-2: #fbbf24; /* amarelo */
+      --outline: rgba(230, 57, 70, 0.4);
     }
     * { box-sizing: border-box; }
     body {
       margin: 0;
       padding: 24px;
       font-family: "Segoe UI", system-ui, -apple-system, sans-serif;
-      background: radial-gradient(circle at 20% 20%, #1f2937, #0f172a 55%), #0b1220;
+      background: radial-gradient(circle at 20% 20%, #1d2a44, #0a0f1c 55%), #0a0f1c;
       color: var(--text);
       display: flex;
       justify-content: center;
     }
     .card {
       width: min(720px, 100%);
-      background: var(--card);
+      background: linear-gradient(135deg, rgba(15,23,41,0.92), rgba(15,23,41,0.85));
       padding: 24px;
       border-radius: 16px;
       box-shadow: 0 20px 50px rgba(0,0,0,0.3);
@@ -37,14 +39,14 @@
       width: 100%;
       margin-top: 6px;
       padding: 10px 12px;
-      background: #0b1220;
+      background: rgba(255,255,255,0.03);
       border: 1px solid rgba(255,255,255,0.08);
       border-radius: 10px;
       color: var(--text);
     }
     input:focus, textarea:focus, select:focus {
       outline: 1px solid var(--accent);
-      box-shadow: 0 0 0 3px rgba(34,211,238,0.18);
+      box-shadow: 0 0 0 3px var(--outline);
     }
     button {
       margin-top: 18px;
@@ -52,14 +54,14 @@
       padding: 12px;
       border: none;
       border-radius: 12px;
-      background: linear-gradient(120deg, #22d3ee, #06b6d4);
+      background: linear-gradient(120deg, var(--accent), #f97316);
       color: #0b1220;
       font-weight: 700;
       letter-spacing: 0.2px;
       cursor: pointer;
       transition: transform 120ms ease, box-shadow 120ms ease;
     }
-    button:hover { transform: translateY(-1px); box-shadow: 0 12px 24px rgba(6,182,212,0.3); }
+    button:hover { transform: translateY(-1px); box-shadow: 0 12px 24px rgba(249,115,22,0.35); }
     #status { margin-top: 14px; white-space: pre-line; color: var(--accent); }
     .muted { color: var(--muted); font-size: 13px; margin-top: 6px; }
     .items-header { margin-top: 18px; display: flex; justify-content: space-between; align-items: center; }
@@ -121,6 +123,9 @@
       <label>PIX do responsável
         <input name="pix" placeholder="Chave PIX" required />
       </label>
+      <label>Responsável pelo envio
+        <input name="responsavelEnvio" placeholder="Quem preencheu o pedido" required />
+      </label>
 
       <div class="items-header">
         <h3 style="margin:0">Itens</h3>
@@ -132,7 +137,8 @@
     </form>
 
     <div id="status"></div>
-    <p class="muted">Após salvar, copie o resumo exibido e cole no grupo.</p>
+    <button type="button" id="copyBtn" class="secondary-btn" style="margin-top:8px; width:100%;" disabled>Copiar resumo</button>
+    <p class="muted">Após salvar, você pode copiar o resumo com o botão acima.</p>
   </div>
 
   <script>
@@ -142,6 +148,7 @@
     const statusEl = document.getElementById('status');
     const itemsContainer = document.getElementById('items');
     const addItemBtn = document.getElementById('addItem');
+    const copyBtn = document.getElementById('copyBtn');
 
     function createItemRow() {
       const wrapper = document.createElement('div');
@@ -180,14 +187,29 @@
       addItemRow();
     });
 
+    copyBtn.addEventListener('click', async () => {
+      const text = statusEl.textContent;
+      if (!text) return;
+      try {
+        await navigator.clipboard.writeText(text);
+        copyBtn.textContent = 'Copiado!';
+        setTimeout(() => (copyBtn.textContent = 'Copiar resumo'), 1500);
+      } catch (err) {
+        copyBtn.textContent = 'Erro ao copiar';
+        setTimeout(() => (copyBtn.textContent = 'Copiar resumo'), 1500);
+      }
+    });
+
     form.addEventListener('submit', async (e) => {
       e.preventDefault();
       statusEl.textContent = 'Enviando...';
+      copyBtn.disabled = true;
 
       const formData = new FormData(form);
       const barbearia = formData.get('barbearia');
       const favorecido = formData.get('favorecido');
       const pix = formData.get('pix');
+      const responsavelEnvio = formData.get('responsavelEnvio');
 
       const items = Array.from(itemsContainer.querySelectorAll('.item-row')).map((row) => {
         return {
@@ -208,17 +230,19 @@
           method: 'POST',
           // text/plain evita preflight de CORS que pode dar "Failed to fetch"
           headers: { 'Content-Type': 'text/plain' },
-          body: JSON.stringify({ barbearia, favorecido, pix, items })
+          body: JSON.stringify({ barbearia, favorecido, pix, responsavelEnvio, items })
         });
         const data = await res.json();
         if (!data.ok) throw new Error(data.error || 'Erro ao salvar');
 
         statusEl.textContent = 'Salvo! Copie e cole no WhatsApp:\n\n' + data.resumo;
+        copyBtn.disabled = false;
         form.reset();
         itemsContainer.innerHTML = '';
         addItemRow();
       } catch (err) {
         statusEl.textContent = 'Erro: ' + err.message;
+        copyBtn.disabled = true;
       }
     });
 

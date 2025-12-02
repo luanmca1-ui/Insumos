@@ -24,7 +24,7 @@ function jsonResponse(obj) {
 
 function saveItems(payload) {
   const sheet = SpreadsheetApp.openById(SHEET_ID).getSheetByName(SHEET_NAME);
-  const { barbearia, favorecido, pix, items = [] } = payload;
+  const { barbearia, favorecido, pix, responsavelEnvio, items = [] } = payload;
 
   let totalGeral = 0;
   const linhasResumo = [
@@ -49,6 +49,7 @@ function saveItems(payload) {
       item.descricao || '',
       favorecido,
       pix,
+      responsavelEnvio || '',
       totalItem
     ]);
 
