@@ -6,6 +6,22 @@ function doGet() {
     .setTitle('Pedido de Insumos');
 }
 
+function doPost(e) {
+  try {
+    const body = e.postData?.contents ? JSON.parse(e.postData.contents) : {};
+    const result = saveItems(body);
+    return jsonResponse({ ok: true, resumo: result.resumo });
+  } catch (err) {
+    return jsonResponse({ ok: false, error: err.message || String(err) });
+  }
+}
+
+// Resposta JSON simples para fetch (funciona quando o front está em outro domínio, como Vercel)
+function jsonResponse(obj) {
+  return ContentService.createTextOutput(JSON.stringify(obj))
+    .setMimeType(ContentService.MimeType.JSON);
+}
+
 function saveItems(payload) {
   const sheet = SpreadsheetApp.openById(SHEET_ID).getSheetByName(SHEET_NAME);
   const { barbearia, favorecido, pix, items = [] } = payload;
