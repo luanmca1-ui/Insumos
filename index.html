@@ -238,7 +238,7 @@
         const data = await res.json();
         if (!data.ok) throw new Error(data.error || 'Erro ao salvar');
 
-        statusEl.textContent = 'Salvo! Copie e cole no WhatsApp:\n\n' + data.resumo;
+        statusEl.textContent = data.resumo;
         copyBtn.disabled = false;
         form.reset();
         itemsContainer.innerHTML = '';
