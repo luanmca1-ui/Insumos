@@ -13,7 +13,6 @@
       --accent: #e63946; /* vermelho do logo */
       --accent-2: #fbbf24; /* amarelo */
       --outline: rgba(230, 57, 70, 0.4);
-      --logo-url: url('https://thebarberexpress.com.br/v1/wp-content/uploads/2021/01/PADRA%CC%83O.png');
     }
     * { box-sizing: border-box; }
     body {
@@ -46,15 +45,20 @@
       height: 72px;
       border-radius: 14px;
       background: rgba(255,255,255,0.06);
-      background-image: var(--logo-url);
-      background-size: cover;
-      background-position: center;
       position: relative;
       overflow: hidden;
       flex-shrink: 0;
+      display: flex;
+      align-items: center;
+      justify-content: center;
     }
-    .brand .logo::after {
-      content: 'TBE';
+    .brand .logo img {
+      width: 100%;
+      height: 100%;
+      object-fit: contain;
+      display: block;
+    }
+    .brand .logo .logo-fallback {
       position: absolute;
       inset: 0;
       display: flex;
@@ -67,7 +71,6 @@
       opacity: 0;
       transition: opacity 150ms ease;
     }
-    .brand .logo[data-error="1"]::after { opacity: 1; }
     .brand .name {
       font-size: 18px;
       font-weight: 800;
@@ -195,7 +198,10 @@
 <body>
   <div class="card">
     <div class="brand">
-      <img src="http://thebarberexpress.com.br/v1/wp-content/uploads/2021/01/PADRA%CC%83O.png" alt="THE BARBER EXPRESS" />
+      <div class="logo">
+        <img src="assets/logo.png" alt="THE BARBER EXPRESS" onerror="this.style.display='none'; this.nextElementSibling.style.opacity='1';" />
+        <div class="logo-fallback">TBE</div>
+      </div>
       <div class="name">THE BARBER EXPRESS</div>
     </div>
     <h1>Pedido de Insumos</h1>
