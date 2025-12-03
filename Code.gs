@@ -26,6 +26,8 @@ function saveItems(payload) {
   const sheet = SpreadsheetApp.openById(SHEET_ID).getSheetByName(SHEET_NAME);
   const { barbearia, favorecido, pix, responsavelEnvio, items = [] } = payload;
 
+  ensureHeaders(sheet);
+
   let totalGeral = 0;
   const linhasResumo = [
     `🏠 *Barbearia:* ${barbearia}`,
@@ -62,4 +64,42 @@ function saveItems(payload) {
   linhasResumo.push(`💰 *Total geral:* R$ ${totalGeral.toFixed(2)}`);
 
   return { resumo: linhasResumo.join('\n') };
+}
+
+// Garante que os cabeçalhos incluam a coluna de Responsável pelo envio
+function ensureHeaders(sheet) {
+  const headers = sheet.getRange(1, 1, 1, sheet.getLastColumn() || 1).getValues()[0];
+  if (headers && headers.length && headers.some(Boolean)) {
+    // Atualiza apenas se não tiver a coluna
+    if (!headers.includes('Responsável pelo envio')) {
+      const newHeaders = [
+        'Data',
+        'Barbearia',
+        'Insumo',
+        'Quantidade',
+        'Valor',
+        'Descrição',
+        'Favorecido',
+        'PIX',
+        'Responsável pelo envio',
+        'Total Item'
+      ];
+      sheet.getRange(1, 1, 1, newHeaders.length).setValues([newHeaders]);
+    }
+  } else {
+    // Se não tiver cabeçalho nenhum, cria o conjunto completo
+    const defaultHeaders = [
+      'Data',
+      'Barbearia',
+      'Insumo',
+      'Quantidade',
+      'Valor',
+      'Descrição',
+      'Favorecido',
+      'PIX',
+      'Responsável pelo envio',
+      'Total Item'
+    ];
+    sheet.getRange(1, 1, 1, defaultHeaders.length).setValues([defaultHeaders]);
+  }
 }
