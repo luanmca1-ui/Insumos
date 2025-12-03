@@ -28,10 +28,10 @@ function saveItems(payload) {
 
   let totalGeral = 0;
   const linhasResumo = [
-    `*Barbearia:* ${barbearia}`,
-    `*Favorecido:* ${favorecido}`,
-    `*PIX:* ${pix}`,
-    '*Itens:*'
+    `🏠 *Barbearia:* ${barbearia}`,
+    `🙋‍♂️ *Favorecido:* ${favorecido}`,
+    `💳 *PIX:* ${pix}`,
+    '📦 *Itens:*'
   ];
 
   items.forEach((item, idx) => {
@@ -54,12 +54,12 @@ function saveItems(payload) {
     ]);
 
     const linhaItem =
-      `${idx + 1}) ${item.insumo} — Qtd: ${qty} — Unit: R$ ${val.toFixed(2)} — Total: R$ ${totalItem.toFixed(2)}` +
-      (item.descricao ? ` — ${item.descricao}` : '');
+      `🔸 ${idx + 1}) ${item.insumo} · Qtd: ${qty} · Unit: R$ ${val.toFixed(2)} · Total: R$ ${totalItem.toFixed(2)}` +
+      (item.descricao ? ` · ${item.descricao}` : '');
     linhasResumo.push(linhaItem);
   });
 
-  linhasResumo.push(`*Total geral:* R$ ${totalGeral.toFixed(2)}`);
+  linhasResumo.push(`💰 *Total geral:* R$ ${totalGeral.toFixed(2)}`);
 
   return { resumo: linhasResumo.join('\n') };
 }
