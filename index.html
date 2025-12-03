@@ -232,8 +232,7 @@
       try {
         const res = await fetch(API_URL, {
           method: 'POST',
-          // text/plain evita preflight de CORS que pode dar "Failed to fetch"
-          headers: { 'Content-Type': 'text/plain' },
+          headers: { 'Content-Type': 'text/plain' }, // evita preflight de CORS
           body: JSON.stringify({ barbearia, favorecido, pix, responsavelEnvio, items })
         });
         const data = await res.json();

@@ -1,9 +1,8 @@
-const SHEET_ID = '1vtS3W1Gn0V5A85AZWqpAm6UUG4JnkyWVAfRSzVvVK-Y'; // coloque aqui o ID real (entre /d/ e /edit)
+const SHEET_ID = '1vtS3W1Gn0V5A85AZWqpAm6UUG4JnkyWVAfRSzVvVK-Y'; // troque se o ID da planilha for outro
 const SHEET_NAME = 'Controle'; // ajuste se a aba tiver outro nome
 
 function doGet() {
-  return HtmlService.createHtmlOutputFromFile('index')
-    .setTitle('Pedido de Insumos');
+  return HtmlService.createHtmlOutputFromFile('index').setTitle('Pedido de Insumos');
 }
 
 function doPost(e) {
@@ -16,10 +15,8 @@ function doPost(e) {
   }
 }
 
-// Resposta JSON simples para fetch (funciona quando o front está em outro domínio, como Vercel)
 function jsonResponse(obj) {
-  return ContentService.createTextOutput(JSON.stringify(obj))
-    .setMimeType(ContentService.MimeType.JSON);
+  return ContentService.createTextOutput(JSON.stringify(obj)).setMimeType(ContentService.MimeType.JSON);
 }
 
 function saveItems(payload) {
@@ -55,9 +52,8 @@ function saveItems(payload) {
       totalItem
     ]);
 
-    const linhaItem =
-      `🔸 ${idx + 1}) ${item.insumo} · Qtd: ${qty} · Unit: R$ ${val.toFixed(2)} · Total: R$ ${totalItem.toFixed(2)}` +
-      (item.descricao ? ` · ${item.descricao}` : '');
+    const linhaItem = `🔸 ${idx + 1}) ${item.insumo} · Qtd: ${qty} · Unit: R$ ${val.toFixed(2)} · Total: R$ ${totalItem.toFixed(2)}`
+      + (item.descricao ? ` · ${item.descricao}` : '');
     linhasResumo.push(linhaItem);
   });
 
@@ -66,40 +62,28 @@ function saveItems(payload) {
   return { resumo: linhasResumo.join('\n') };
 }
 
-// Garante que os cabeçalhos incluam a coluna de Responsável pelo envio
+// Garante que existe a coluna "Responsável pelo envio"
 function ensureHeaders(sheet) {
   const headers = sheet.getRange(1, 1, 1, sheet.getLastColumn() || 1).getValues()[0];
-  if (headers && headers.length && headers.some(Boolean)) {
-    // Atualiza apenas se não tiver a coluna
-    if (!headers.includes('Responsável pelo envio')) {
-      const newHeaders = [
-        'Data',
-        'Barbearia',
-        'Insumo',
-        'Quantidade',
-        'Valor',
-        'Descrição',
-        'Favorecido',
-        'PIX',
-        'Responsável pelo envio',
-        'Total Item'
-      ];
-      sheet.getRange(1, 1, 1, newHeaders.length).setValues([newHeaders]);
-    }
-  } else {
-    // Se não tiver cabeçalho nenhum, cria o conjunto completo
-    const defaultHeaders = [
-      'Data',
-      'Barbearia',
-      'Insumo',
-      'Quantidade',
-      'Valor',
-      'Descrição',
-      'Favorecido',
-      'PIX',
-      'Responsável pelo envio',
-      'Total Item'
-    ];
-    sheet.getRange(1, 1, 1, defaultHeaders.length).setValues([defaultHeaders]);
+  const desired = [
+    'Data',
+    'Barbearia',
+    'Insumo',
+    'Quantidade',
+    'Valor',
+    'Descrição',
+    'Favorecido',
+    'PIX',
+    'Responsável pelo envio',
+    'Total Item'
+  ];
+
+  if (!headers || !headers.some(Boolean)) {
+    sheet.getRange(1, 1, 1, desired.length).setValues([desired]);
+    return;
+  }
+
+  if (!headers.includes('Responsável pelo envio') || headers.length !== desired.length) {
+    sheet.getRange(1, 1, 1, desired.length).setValues([desired]);
   }
 }
