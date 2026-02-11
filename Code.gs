@@ -1,5 +1,5 @@
-const SHEET_ID = '1vtS3W1Gn0V5A85AZWqpAm6UUG4JnkyWVAfRSzVvVK-Y'; // troque se o ID da planilha for outro
-const SHEET_NAME = 'Controle'; // ajuste se a aba tiver outro nome
+const SHEET_ID = '1lfvXJMP5ta1sEYWBJULWK820TiAx2MkvkNAtaxyybH0'; // troque se o ID da planilha for outro
+const SHEET_NAME = 'insumos'; // ajuste se a aba tiver outro nome
 
 function doGet() {
   return HtmlService.createHtmlOutputFromFile('index').setTitle('Pedido de Insumos');
