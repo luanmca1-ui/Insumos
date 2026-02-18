@@ -39,10 +39,11 @@ function saveItems(payload) {
 
   let totalGeral = 0;
   const resumoLinhas = [
-    'Pedido de Insumos',
-    'Barbearia: ' + barbearia,
-    'Responsavel pelo envio: ' + responsavelEnvio,
-    ''
+    '📋 *PEDIDO DE INSUMOS*',
+    '━━━━━━━━━━━━━━━━━━',
+    '🏬 *Barbearia:* ' + barbearia,
+    '🧾 *Responsável pelo envio:* ' + responsavelEnvio,
+    '━━━━━━━━━━━━━━━━━━'
   ];
 
   favorecidos.forEach(function (fav, favIdx) {
@@ -54,8 +55,10 @@ function saveItems(payload) {
       return;
     }
 
-    resumoLinhas.push('Favorecido ' + (favIdx + 1) + ': ' + favorecido);
-    resumoLinhas.push('PIX: ' + pix);
+    resumoLinhas.push('');
+    resumoLinhas.push('👤 *Favorecido ' + (favIdx + 1) + ':* ' + favorecido);
+    resumoLinhas.push('💳 *PIX:* ' + pix);
+    resumoLinhas.push('🛒 *Itens:*');
 
     let totalFav = 0;
 
@@ -80,21 +83,26 @@ function saveItems(payload) {
       ]);
 
       const linhaItem =
-        (idx + 1) + ') ' + (item.insumo || '') +
-        ' | Qtd: ' + qty +
-        ' | Unit: R$ ' + val.toFixed(2) +
-        ' | Total: R$ ' + totalItem.toFixed(2) +
-        (item.descricao ? ' | ' + item.descricao : '');
+        '• *' + (idx + 1) + ')* ' + (item.insumo || '') +
+        '\n   ▫️ Qtd: ' + qty +
+        ' | Unit: ' + formatCurrency(val) +
+        ' | Total: ' + formatCurrency(totalItem) +
+        (item.descricao ? '\n   ▫️ Obs: ' + item.descricao : '');
 
       resumoLinhas.push(linhaItem);
     });
 
-    resumoLinhas.push('Subtotal favorecido: R$ ' + totalFav.toFixed(2));
-    resumoLinhas.push('');
+    resumoLinhas.push('💰 *Subtotal do favorecido:* ' + formatCurrency(totalFav));
+    resumoLinhas.push('━━━━━━━━━━━━━━━━━━');
   });
 
-  resumoLinhas.push('Total geral: R$ ' + totalGeral.toFixed(2));
+  resumoLinhas.push('✅ *TOTAL GERAL:* ' + formatCurrency(totalGeral));
   return { resumo: resumoLinhas.join('\n') };
+}
+
+function formatCurrency(value) {
+  const n = Number(value) || 0;
+  return 'R$ ' + n.toFixed(2);
 }
 
 function ensureHeaders(sheet) {
